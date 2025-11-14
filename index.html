@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -501,7 +501,7 @@
             document.getElementById('reason-input').value = '';
             
             // Show success notification
-            showNotification('Thanks for sharing!', 'success');
+            showNotification('¡Gracias por compartirlo!', 'Éxito');
             
             // Reset bobblehead position
             const bobblehead = document.getElementById('bobblehead');
@@ -545,7 +545,7 @@
             });
             
             // Combine feeling and reason
-            const combinedText = `<strong>Feeling:</strong> ${feeling}<br><strong>Why:</strong> ${reason}`;
+            const combinedText = `<strong>Sentimiento:</strong> ${feeling}<br><strong>Motivo:</strong> ${reason}`;
             cloud.innerHTML = `<div class="cloud-text">${combinedText}</div>`;
             
             // Add to container
@@ -681,3 +681,5 @@
     </script>
 </body>
 </html>
+
+
