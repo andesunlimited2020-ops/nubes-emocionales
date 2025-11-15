@@ -540,12 +540,14 @@
         <h3>Debug Information</h3>
         <div id="debug-content"></div>
         <button id="test-connection" style="margin-top: 10px; padding: 5px 10px; background: #33ffcc; border: none; border-radius: 5px; cursor: pointer;">Test Connection</button>
+        <button id="test-direct" style="margin-top: 5px; padding: 5px 10px; background: #ffcc33; border: none; border-radius: 5px; cursor: pointer;">Test Script Directly</button>
+        <button id="test-form" style="margin-top: 5px; padding: 5px 10px; background: #ff3366; border: none; border-radius: 5px; cursor: pointer; color: white;">Test Form Method</button>
     </div>
     
     <script>
         // Configuración de Google Sheets - URL de Web App de Apps Script
         const GOOGLE_SHEETS_CONFIG = {
-            webAppUrl: 'https://script.google.com/macros/s/AKfycbxvye-DR57M8fpKa462_yOFf-pljLwTD3R6NWyt4ixqhPzvityhpxaYQi38L7byhsj7/exec'
+            webAppUrl: 'https://script.google.com/macros/s/AKfycbzoiyE7SrGgOAsIpiZGzss4K6afD9jjA828wQstCSw/dev'
         };
         
         // Fuentes aleatorias para las nubes
@@ -586,6 +588,8 @@
             // Debug panel toggle
             document.getElementById('debug-toggle').addEventListener('click', toggleDebugPanel);
             document.getElementById('test-connection').addEventListener('click', testGoogleSheetsConnection);
+            document.getElementById('test-direct').addEventListener('click', testScriptDirectly);
+            document.getElementById('test-form').addEventListener('click', testFormMethod);
             
             // Mover bobblehead al input activo
             document.getElementById('feeling-input').addEventListener('focus', moveBobblehead);
@@ -657,6 +661,71 @@
             }
         }
         
+        // Test script directly
+        async function testScriptDirectly() {
+            updateDebugInfo('Direct script test', 'Starting...');
+            
+            try {
+                // Test GET request first
+                const getResponse = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl);
+                const getResult = await getResponse.json();
+                updateDebugInfo('GET test', JSON.stringify(getResult));
+                
+                // Then test POST request
+                const testData = {
+                    feeling: 'Direct Test',
+                    reason: 'Testing at ' + new Date().toLocaleString()
+                };
+                
+                const postResponse = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const postResult = await postResponse.json();
+                updateDebugInfo('POST test', JSON.stringify(postResult));
+                
+                if (postResult.status === 'success') {
+                    updateDebugInfo('Direct test', '✅ Success');
+                } else {
+                    updateDebugInfo('Direct test', `❌ Failed: ${postResult.message}`);
+                }
+            } catch (error) {
+                updateDebugInfo('Direct test error', error.message);
+            }
+        }
+        
+        // Test form method
+        async function testFormMethod() {
+            updateDebugInfo('Form method test', 'Starting...');
+            
+            try {
+                const formData = new FormData();
+                formData.append('feeling', 'Form Test');
+                formData.append('reason', 'Testing form method');
+                formData.append('timestamp', new Date().toISOString());
+                
+                const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                updateDebugInfo('Form test', JSON.stringify(result));
+                
+                if (result.status === 'success') {
+                    updateDebugInfo('Form test', '✅ Success');
+                } else {
+                    updateDebugInfo('Form test', `❌ Failed: ${result.message}`);
+                }
+            } catch (error) {
+                updateDebugInfo('Form test error', error.message);
+            }
+        }
+        
         // Mover bobblehead al input enfocado
         function moveBobblehead(e) {
             const bobblehead = document.getElementById('bobblehead');
@@ -685,7 +754,7 @@
             updateDebugInfo('Form data', `Feeling: "${feeling}", Reason: "${reason}"`);
             
             try {
-                // Enviar a Google Sheets
+                // Try multiple methods
                 await sendToGoogleSheets(feeling, reason);
                 
                 // Crear animación de nube
@@ -727,7 +796,7 @@
             const methods = [
                 sendWithFetch,
                 sendWithForm,
-                sendWithImage
+                sendWithGet
             ];
             
             for (const method of methods) {
@@ -745,7 +814,7 @@
             throw new Error('Todos los métodos de envío fallaron');
         }
         
-        // Method 1: Fetch API
+        // Method 1: Fetch API with JSON
         async function sendWithFetch(feeling, reason) {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -792,77 +861,42 @@
         
         // Method 2: Form submission
         async function sendWithForm(feeling, reason) {
-            return new Promise((resolve, reject) => {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = GOOGLE_SHEETS_CONFIG.webAppUrl;
-                form.style.display = 'none';
-                
-                const fields = [
-                    { name: 'feeling', value: feeling },
-                    { name: 'reason', value: reason },
-                    { name: 'timestamp', value: new Date().toISOString() }
-                ];
-                
-                fields.forEach(field => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = field.name;
-                    input.value = field.value;
-                    form.appendChild(input);
-                });
-                
-                const iframe = document.createElement('iframe');
-                iframe.name = 'gs-iframe-' + Date.now();
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-                
-                form.target = iframe.name;
-                document.body.appendChild(form);
-                
-                iframe.onload = () => {
-                    setTimeout(() => {
-                        showNotification('¡Gracias por compartir! Tus sentimientos fueron registrados.', 'success');
-                        cleanup();
-                        resolve();
-                    }, 1000);
-                };
-                
-                iframe.onerror = () => {
-                    cleanup();
-                    reject(new Error('Form submission failed'));
-                };
-                
-                function cleanup() {
-                    document.body.removeChild(form);
-                    document.body.removeChild(iframe);
-                }
-                
-                form.submit();
+            const formData = new FormData();
+            formData.append('feeling', feeling);
+            formData.append('reason', reason);
+            formData.append('timestamp', new Date().toISOString());
+            
+            const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
+                method: 'POST',
+                body: formData
             });
+            
+            const result = await response.json();
+            updateDebugInfo('Form response', JSON.stringify(result));
+            
+            if (result.status === 'success') {
+                showNotification('¡Gracias por compartir! Tus sentimientos fueron registrados.', 'success');
+            } else {
+                throw new Error(result.message || 'Error desconocido');
+            }
         }
         
-        // Method 3: Image beacon (last resort)
-        async function sendWithImage(feeling, reason) {
+        // Method 3: GET request with parameters
+        async function sendWithGet(feeling, reason) {
             const params = new URLSearchParams({
                 feeling: feeling,
                 reason: reason,
                 timestamp: new Date().toISOString()
             });
             
-            const img = new Image();
-            img.src = `${GOOGLE_SHEETS_CONFIG.webAppUrl}?${params.toString()}`;
+            const response = await fetch(`${GOOGLE_SHEETS_CONFIG.webAppUrl}?${params.toString()}`);
+            const result = await response.json();
             
-            return new Promise((resolve) => {
-                img.onload = () => {
-                    showNotification('¡Gracias por compartir! Tus sentimientos fueron registrados.', 'success');
-                    resolve();
-                };
-                img.onerror = () => {
-                    resolve(); // Assume it worked anyway
-                };
-                setTimeout(resolve, 3000);
-            });
+            if (result.status === 'success') {
+                showNotification('¡Gracias por compartir! Tus sentimientos fueron registrados.', 'success');
+            } else {
+                throw new Error(result.message || 'Error desconocido');
+            }
         }
         
         // Guardar datos offline para sincronizar después
