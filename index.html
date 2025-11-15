@@ -221,40 +221,6 @@
             transform: scale(0.98);
         }
         
-        /* Debug Panel */
-        .debug-panel {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            font-family: monospace;
-            font-size: 12px;
-            max-width: 300px;
-            z-index: 2000;
-            display: none;
-        }
-        
-        .debug-panel.show {
-            display: block;
-        }
-        
-        .debug-toggle {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-family: monospace;
-            font-size: 12px;
-            cursor: pointer;
-            z-index: 2001;
-        }
-        
         /* What We've Heard Section */
         .heard-section {
             padding: 50px 20px;
@@ -535,16 +501,6 @@
         <div class="loading-spinner"></div>
     </div>
     
-    <div class="debug-toggle" id="debug-toggle">Debug</div>
-    <div class="debug-panel" id="debug-panel">
-        <h3>Debug Information</h3>
-        <div id="debug-content"></div>
-        <button id="test-connection" style="margin-top: 10px; padding: 5px 10px; background: #33ffcc; border: none; border-radius: 5px; cursor: pointer;">Test Connection</button>
-        <button id="test-direct" style="margin-top: 5px; padding: 5px 10px; background: #ffcc33; border: none; border-radius: 5px; cursor: pointer;">Test Script Directly</button>
-        <button id="test-form" style="margin-top: 5px; padding: 5px 10px; background: #ff3366; border: none; border-radius: 5px; cursor: pointer; color: white;">Test Form Method</button>
-        <button id="test-iframe" style="margin-top: 5px; padding: 5px 10px; background: #9c27b0; border: none; border-radius: 5px; cursor: pointer; color: white;">Test Iframe Method</button>
-    </div>
-    
     <script>
         // Configuración de Google Sheets - URL de Web App de Apps Script
         const GOOGLE_SHEETS_CONFIG = {
@@ -575,9 +531,6 @@
         const maxClouds = 8;
         let cloudZIndex = 1;
         
-        // Debug panel
-        // let debugMode = false;
-        
         // Inicializar la página
         document.addEventListener('DOMContentLoaded', function() {
             // Cargar respuestas de ejemplo para demostración
@@ -586,222 +539,13 @@
             // Configurar event listeners
             document.getElementById('submit-btn').addEventListener('click', submitForm);
             
-            // Debug panel toggle
-            document.getElementById('debug-toggle').addEventListener('click', toggleDebugPanel);
-            document.getElementById('test-connection').addEventListener('click', testGoogleSheetsConnection);
-            document.getElementById('test-direct').addEventListener('click', testScriptDirectly);
-            document.getElementById('test-form').addEventListener('click', testFormMethod);
-            document.getElementById('test-iframe').addEventListener('click', testIframeMethod);
-            
             // Mover bobblehead al input activo
             document.getElementById('feeling-input').addEventListener('focus', moveBobblehead);
             document.getElementById('reason-input').addEventListener('focus', moveBobblehead);
             
             // Verificar datos offline para sincronizar
             checkAndSyncOfflineData();
-            
-            // Check if we're online
-            updateDebugInfo('Connection status', navigator.onLine ? 'Online' : 'Offline');
         });
-        
-        // Toggle debug panel
-        function toggleDebugPanel() {
-            debugMode = !debugMode;
-            const panel = document.getElementById('debug-panel');
-            if (debugMode) {
-                panel.classList.add('show');
-            } else {
-                panel.classList.remove('show');
-            }
-        }
-        
-        // Update debug info
-        function updateDebugInfo(key, value) {
-            if (!debugMode) return;
-            
-            const debugContent = document.getElementById('debug-content');
-            let content = debugContent.innerHTML;
-            
-            // Check if key already exists
-            const regex = new RegExp(`<strong>${key}:</strong>.*<br>`);
-            if (regex.test(content)) {
-                content = content.replace(regex, `<strong>${key}:</strong> ${value}<br>`);
-            } else {
-                content += `<strong>${key}:</strong> ${value}<br>`;
-            }
-            
-            debugContent.innerHTML = content;
-        }
-        
-        // Test Google Sheets connection
-        async function testGoogleSheetsConnection() {
-            updateDebugInfo('Test status', 'Testing...');
-            
-            try {
-                const testData = {
-                    feeling: 'Test Connection',
-                    reason: 'Testing at ' + new Date().toLocaleString()
-                };
-                
-                const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(testData)
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok && result.status === 'success') {
-                    updateDebugInfo('Test status', '✅ Success');
-                } else {
-                    updateDebugInfo('Test status', `❌ Failed: ${result.message || 'Unknown error'}`);
-                }
-            } catch (error) {
-                updateDebugInfo('Test status', `❌ Error: ${error.message}`);
-            }
-        }
-        
-        // Test script directly
-        async function testScriptDirectly() {
-            updateDebugInfo('Direct script test', 'Starting...');
-            
-            try {
-                // Test GET request first
-                const getResponse = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl);
-                const getResult = await getResponse.json();
-                updateDebugInfo('GET test', JSON.stringify(getResult));
-                
-                // Then test POST request
-                const testData = {
-                    feeling: 'Direct Test',
-                    reason: 'Testing at ' + new Date().toLocaleString()
-                };
-                
-                const postResponse = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(testData)
-                });
-                
-                const postResult = await postResponse.json();
-                updateDebugInfo('POST test', JSON.stringify(postResult));
-                
-                if (postResult.status === 'success') {
-                    updateDebugInfo('Direct test', '✅ Success');
-                } else {
-                    updateDebugInfo('Direct test', `❌ Failed: ${postResult.message}`);
-                }
-            } catch (error) {
-                updateDebugInfo('Direct test error', error.message);
-            }
-        }
-        
-        // Test form method
-        async function testFormMethod() {
-            updateDebugInfo('Form method test', 'Starting...');
-            
-            try {
-                const formData = new FormData();
-                formData.append('feeling', 'Form Test');
-                formData.append('reason', 'Testing form method');
-                formData.append('timestamp', new Date().toISOString());
-                
-                const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                updateDebugInfo('Form test', JSON.stringify(result));
-                
-                if (result.status === 'success') {
-                    updateDebugInfo('Form test', '✅ Success');
-                } else {
-                    updateDebugInfo('Form test', `❌ Failed: ${result.message}`);
-                }
-            } catch (error) {
-                updateDebugInfo('Form test error', error.message);
-            }
-        }
-        
-        // Test iframe method
-        async function testIframeMethod() {
-            updateDebugInfo('Iframe method test', 'Starting...');
-            
-            try {
-                // Create a hidden iframe
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.name = 'gs-iframe-' + Date.now();
-                document.body.appendChild(iframe);
-                
-                // Create a form
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = GOOGLE_SHEETS_CONFIG.webAppUrl;
-                form.target = iframe.name;
-                form.style.display = 'none';
-                
-                // Add test data
-                const feelingField = document.createElement('input');
-                feelingField.type = 'hidden';
-                feelingField.name = 'feeling';
-                feelingField.value = 'Iframe Test';
-                form.appendChild(feelingField);
-                
-                const reasonField = document.createElement('input');
-                reasonField.type = 'hidden';
-                reasonField.name = 'reason';
-                reasonField.value = 'Testing iframe method';
-                form.appendChild(reasonField);
-                
-                const timestampField = document.createElement('input');
-                timestampField.type = 'hidden';
-                timestampField.name = 'timestamp';
-                timestampField.value = new Date().toISOString();
-                form.appendChild(timestampField);
-                
-                // Submit the form
-                document.body.appendChild(form);
-                form.submit();
-                
-                // Wait for response
-                return new Promise((resolve, reject) => {
-                    iframe.onload = () => {
-                        setTimeout(() => {
-                            updateDebugInfo('Iframe test', '✅ Success');
-                            resolve();
-                            // Clean up
-                            document.body.removeChild(form);
-                            document.body.removeChild(iframe);
-                        }, 1000);
-                    };
-                    
-                    iframe.onerror = () => {
-                        updateDebugInfo('Iframe test', '❌ Failed');
-                        reject(new Error('Iframe method failed'));
-                        // Clean up
-                        document.body.removeChild(form);
-                        document.body.removeChild(iframe);
-                    };
-                    
-                    // Timeout after 5 seconds
-                    setTimeout(() => {
-                        updateDebugInfo('Iframe test', '⏱️ Timeout');
-                        resolve();
-                        // Clean up
-                        document.body.removeChild(form);
-                        document.body.removeChild(iframe);
-                    }, 5000);
-                });
-            } catch (error) {
-                updateDebugInfo('Iframe test error', error.message);
-            }
-        }
         
         // Mover bobblehead al input enfocado
         function moveBobblehead(e) {
@@ -827,11 +571,8 @@
             submitBtn.disabled = true;
             showLoading(true);
             
-            updateDebugInfo('Form submission', 'Starting...');
-            updateDebugInfo('Form data', `Feeling: "${feeling}", Reason: "${reason}"`);
-            
             try {
-                // Try multiple methods
+                // Enviar a Google Sheets
                 await sendToGoogleSheets(feeling, reason);
                 
                 // Crear animación de nube
@@ -848,7 +589,6 @@
                 
             } catch (error) {
                 console.error('Error de envío:', error);
-                updateDebugInfo('Error', error.message);
                 
                 // Verificar si realmente estamos offline
                 if (!navigator.onLine) {
@@ -867,77 +607,6 @@
         
         // Enviar datos a Google Sheets via Apps Script - Método mejorado
         async function sendToGoogleSheets(feeling, reason) {
-            updateDebugInfo('Sending to Google Sheets', 'Starting...');
-            
-            // Try multiple methods in order
-            const methods = [
-                sendWithFetch,
-                sendWithForm,
-                sendWithIframe
-            ];
-            
-            for (const method of methods) {
-                try {
-                    updateDebugInfo('Trying method', method.name);
-                    await method(feeling, reason);
-                    updateDebugInfo('Success with', method.name);
-                    return;
-                } catch (error) {
-                    updateDebugInfo('Method failed', `${method.name}: ${error.message}`);
-                    continue;
-                }
-            }
-            
-            throw new Error('Todos los métodos de envío fallaron');
-        }
-        
-        // Method 1: Fetch API with JSON
-        async function sendWithFetch(feeling, reason) {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
-            
-            try {
-                const requestData = {
-                    feeling: feeling,
-                    reason: reason,
-                    timestamp: new Date().toISOString()
-                };
-                
-                updateDebugInfo('Request data', JSON.stringify(requestData));
-                
-                const response = await fetch(GOOGLE_SHEETS_CONFIG.webAppUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestData),
-                    signal: controller.signal
-                });
-                
-                clearTimeout(timeoutId);
-                
-                updateDebugInfo('Response status', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                updateDebugInfo('Response data', JSON.stringify(result));
-                
-                if (result.status === 'success') {
-                    showNotification('¡Gracias por compartir! Tus sentimientos fueron registrados.', 'success');
-                } else {
-                    throw new Error(result.message || 'Error desconocido');
-                }
-            } catch (error) {
-                clearTimeout(timeoutId);
-                throw error;
-            }
-        }
-        
-        // Method 2: Form submission
-        async function sendWithForm(feeling, reason) {
             const formData = new FormData();
             formData.append('feeling', feeling);
             formData.append('reason', reason);
@@ -949,80 +618,12 @@
             });
             
             const result = await response.json();
-            updateDebugInfo('Form response', JSON.stringify(result));
             
             if (result.status === 'success') {
                 showNotification('¡Gracias por compartir! Tus sentimientos fueron registrados.', 'success');
             } else {
                 throw new Error(result.message || 'Error desconocido');
             }
-        }
-        
-        // Method 3: Iframe submission
-        async function sendWithIframe(feeling, reason) {
-            return new Promise((resolve, reject) => {
-                // Create a hidden iframe
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.name = 'gs-iframe-' + Date.now();
-                document.body.appendChild(iframe);
-                
-                // Create a form
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = GOOGLE_SHEETS_CONFIG.webAppUrl;
-                form.target = iframe.name;
-                form.style.display = 'none';
-                
-                // Add data
-                const feelingField = document.createElement('input');
-                feelingField.type = 'hidden';
-                feelingField.name = 'feeling';
-                feelingField.value = feeling;
-                form.appendChild(feelingField);
-                
-                const reasonField = document.createElement('input');
-                reasonField.type = 'hidden';
-                reasonField.name = 'reason';
-                reasonField.value = reason;
-                form.appendChild(reasonField);
-                
-                const timestampField = document.createElement('input');
-                timestampField.type = 'hidden';
-                timestampField.name = 'timestamp';
-                timestampField.value = new Date().toISOString();
-                form.appendChild(timestampField);
-                
-                // Submit the form
-                document.body.appendChild(form);
-                form.submit();
-                
-                // Wait for response
-                iframe.onload = () => {
-                    setTimeout(() => {
-                        showNotification('¡Gracias por compartir! Tus sentimientos fueron registrados.', 'success');
-                        resolve();
-                        // Clean up
-                        document.body.removeChild(form);
-                        document.body.removeChild(iframe);
-                    }, 1000);
-                };
-                
-                iframe.onerror = () => {
-                    reject(new Error('Iframe method failed'));
-                    // Clean up
-                    document.body.removeChild(form);
-                    document.body.removeChild(iframe);
-                };
-                
-                // Timeout after 5 seconds
-                setTimeout(() => {
-                    resolve(); // Assume success after timeout
-                    // Clean up
-                    document.body.removeChild(form);
-                    document.body.removeChild(iframe);
-                }, 5000);
-            });
         }
         
         // Guardar datos offline para sincronizar después
@@ -1036,21 +637,17 @@
             const storedData = JSON.parse(localStorage.getItem('feelingsPollOffline') || '[]');
             storedData.push(offlineData);
             localStorage.setItem('feelingsPollOffline', JSON.stringify(storedData));
-            
-            updateDebugInfo('Offline data saved', `${storedData.length} items`);
         }
         
         // Verificar y sincronizar datos offline
         async function checkAndSyncOfflineData() {
             if (!navigator.onLine) {
-                updateDebugInfo('Sync status', 'Offline - skipping');
                 return;
             }
             
             const offlineData = JSON.parse(localStorage.getItem('feelingsPollOffline') || '[]');
             
             if (offlineData.length > 0) {
-                updateDebugInfo('Sync status', `Syncing ${offlineData.length} items`);
                 showNotification(`Sincronizando ${offlineData.length} envíos offline...`, 'info');
                 
                 let syncedCount = 0;
@@ -1060,7 +657,6 @@
                         syncedCount++;
                     } catch (error) {
                         console.error('Falló la sincronización:', error);
-                        updateDebugInfo('Sync error', error.message);
                         break;
                     }
                 }
@@ -1069,10 +665,7 @@
                     const remainingData = offlineData.slice(syncedCount);
                     localStorage.setItem('feelingsPollOffline', JSON.stringify(remainingData));
                     showNotification('¡Todos los datos offline se sincronizaron exitosamente!', 'success');
-                    updateDebugInfo('Sync status', `✅ Synced ${syncedCount} items`);
                 }
-            } else {
-                updateDebugInfo('Sync status', 'No offline data');
             }
         }
         
@@ -1212,14 +805,10 @@
         
         // Escuchar cambios de conexión
         window.addEventListener('online', function() {
-            console.log('Conexión restaurada');
-            updateDebugInfo('Connection status', 'Online');
             checkAndSyncOfflineData();
         });
         
         window.addEventListener('offline', function() {
-            console.log('Conexión perdida');
-            updateDebugInfo('Connection status', 'Offline');
             showNotification('Sin conexión. Los datos se guardarán localmente.', 'info');
         });
     </script>
