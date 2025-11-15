@@ -461,7 +461,7 @@
     <main>
         <section class="form-container">
             <div class="input-module" id="feeling-module">
-                <h2>How do you feel today?</h2>
+                <h2>¿Cómo te sientes hoy?</h2>
                 <p class="instruction">Describe como te sientes en tus propias palabras</p>
                 <textarea id="feeling-input" placeholder="ej., Feliz, Ansioso, Emocionado, Triste, Cansado..." maxlength="500"></textarea>
             </div>
@@ -480,7 +480,7 @@
         <section class="heard-section">
             <h2 class="heard-title">¡Lo que hemos escuchado!</h2>
             <p style="text-align: center; color: white; margin-bottom: 20px; font-family: 'Caveat', cursive; font-size: 1.2rem;">
-                Click clouds to bring them forward • Triple-click for a surprise!
+                ¡Haz clic en las nubes para traerlas al frente • ¡Haz clic tres veces para una sorpresa!
             </p>
             <div class="clouds-container" id="clouds-container">
                 <!-- Clouds will be dynamically added here -->
@@ -560,7 +560,7 @@
             const reason = document.getElementById('reason-input').value.trim();
             
             if (!feeling) {
-                showNotification('Please tell us how you feel!', 'error');
+                showNotification('¿Cuenta como te sientes!', 'error');
                 return;
             }
             
@@ -694,8 +694,8 @@
             });
             
             // Combine feeling and reason
-            const combinedText = `<strong>Feeling:</strong> ${feeling}<br><strong>Why:</strong> ${reason}`;
-            cloud.innerHTML = `<div class="cloud-text">${combinedText}</div><div class="cloud-instruction">Click to bring forward • Triple-click for surprise</div>`;
+            const combinedText = `<strong>Sentimiento:</strong> ${feeling}<br><strong>Motivo:</strong> ${reason}`;
+            cloud.innerHTML = `<div class="cloud-text">${combinedText}</div><div class="cloud-instruction">Clic para traer al frente • Clic tres veces para una sorpresa</div>`;
             
             container.appendChild(cloud);
         }
@@ -795,5 +795,6 @@
     </script>
 </body>
 </html>
+
 
 
