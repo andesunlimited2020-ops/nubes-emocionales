@@ -576,22 +576,22 @@
         let cloudZIndex = 1;
         
         // Debug panel
-        let debugMode = false;
+        // let debugMode = false;
         
         // Inicializar la página
-        //document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             // Cargar respuestas de ejemplo para demostración
-           // loadSampleResponses();
+            loadSampleResponses();
             
             // Configurar event listeners
-           // document.getElementById('submit-btn').addEventListener('click', submitForm);
+            document.getElementById('submit-btn').addEventListener('click', submitForm);
             
             // Debug panel toggle
-           // document.getElementById('debug-toggle').addEventListener('click', toggleDebugPanel);
-           // document.getElementById('test-connection').addEventListener('click', testGoogleSheetsConnection);
-           // document.getElementById('test-direct').addEventListener('click', testScriptDirectly);
-           // document.getElementById('test-form').addEventListener('click', testFormMethod);
-           // document.getElementById('test-iframe').addEventListener('click', testIframeMethod);
+            document.getElementById('debug-toggle').addEventListener('click', toggleDebugPanel);
+            document.getElementById('test-connection').addEventListener('click', testGoogleSheetsConnection);
+            document.getElementById('test-direct').addEventListener('click', testScriptDirectly);
+            document.getElementById('test-form').addEventListener('click', testFormMethod);
+            document.getElementById('test-iframe').addEventListener('click', testIframeMethod);
             
             // Mover bobblehead al input activo
             document.getElementById('feeling-input').addEventListener('focus', moveBobblehead);
@@ -1225,4 +1225,3 @@
     </script>
 </body>
 </html>
-
