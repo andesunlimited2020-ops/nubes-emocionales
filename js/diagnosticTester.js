@@ -3,6 +3,8 @@
  * Ejecuta tests de funcionamiento y seguridad de forma transparente para el usuario
  */
 
+
+import { config } from './config.js';
 class DiagnosticTester {
     constructor(config, cloudManager, formHandler, moderator) {
         this.config = config;

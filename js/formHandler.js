@@ -3,6 +3,8 @@
  * Maneja la captura de datos, validación y envío a Google Sheets
  */
 
+import { config } from './config.js';
+
 class FormHandler {
     constructor(config, cloudManager, moderator) {
         this.config = config;

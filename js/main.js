@@ -3,14 +3,10 @@
  * Orquesta todos los módulos y configura la aplicación
  */
 
+import { config } from './config.js';
+
 (function() {
     'use strict';
-
-    // Verificar que APP_CONFIG esté disponible
-    if (typeof APP_CONFIG === 'undefined') {
-        console.error('❌ Error: APP_CONFIG no está cargado. Verifica el orden de los scripts.');
-        return;
-    }
 
     // Variables globales de la aplicación
     let cloudManager;
@@ -26,7 +22,7 @@
         console.log('🚀 Iniciando Nubes Emocionales...');
 
         // 1. Inicializar moderador de contenido
-        moderator = new ContentModerator(APP_CONFIG);
+        moderator = new ContentModerator(config);
         console.log('✓ Moderador de contenido inicializado');
 
         // 2. Inicializar gestor de nubes
@@ -36,21 +32,21 @@
             return;
         }
         
-        cloudManager = new CloudManager(APP_CONFIG);
+        cloudManager = new CloudManager(config);
         cloudManager.init(cloudsContainer);
         console.log('✓ Gestor de nubes inicializado');
 
         // 3. Inicializar manejador de formularios
-        formHandler = new FormHandler(APP_CONFIG, cloudManager, moderator);
+        formHandler = new FormHandler(config, cloudManager, moderator);
         formHandler.init('feeling-input', 'reason-input', 'submit-btn');
         console.log('✓ Manejador de formularios inicializado');
 
         // 4. Inicializar tester de diagnóstico
-        diagnosticTester = new DiagnosticTester(APP_CONFIG, cloudManager, formHandler, moderator);
+        diagnosticTester = new DiagnosticTester(config, cloudManager, formHandler, moderator);
         console.log('✓ Tester de diagnóstico inicializado');
 
         // 5. Inicializar panel de administración
-        adminPanel = new AdminPanel(APP_CONFIG, diagnosticTester, cloudManager, moderator);
+        adminPanel = new AdminPanel(config, diagnosticTester, cloudManager, moderator);
         console.log('✓ Panel de administración inicializado');
 
         // 6. Configurar movimiento del bobblehead
@@ -115,7 +111,7 @@
     function exposeDebugFunctions() {
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             window.appDebug = {
-                config: APP_CONFIG,
+                config: config,
                 cloudManager,
                 moderator,
                 formHandler,

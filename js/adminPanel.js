@@ -3,6 +3,8 @@
  * Proporciona acceso seguro al panel de administración mediante combinación de teclas secreta
  */
 
+
+import { config } from './config.js';
 class AdminPanel {
     constructor(config, diagnosticTester, cloudManager, moderator) {
         this.config = config;
