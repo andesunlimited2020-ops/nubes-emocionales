@@ -4,6 +4,8 @@
  * Modelo: martin-ha/toxic-comment-model (soporta español e inglés)
  */
 
+import { config } from './config.js';
+
 class ContentModerator {
     constructor(config) {
         this.config = config;
@@ -143,7 +145,5 @@ class ContentModerator {
     }
 }
 
-// Exportar para uso en otros módulos
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ContentModerator;
-}
+// Exportar para uso en otros módulos (ES6)
+export { ContentModerator };

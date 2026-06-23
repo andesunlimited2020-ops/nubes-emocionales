@@ -3,6 +3,8 @@
  * Maneja el mini-juego interactivo de nubes en la parte inferior
  */
 
+import { config } from '../config.js';
+
 (function() {
     // Configuración del juego
     const CONFIG = {

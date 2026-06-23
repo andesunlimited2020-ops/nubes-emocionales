@@ -3,6 +3,8 @@
  * Maneja la creación, visualización y eventos de las nubes emocionales
  */
 
+
+import { config } from './config.js';
 class CloudManager {
     constructor(config) {
         this.config = config;
@@ -211,7 +213,5 @@ class CloudManager {
     }
 }
 
-// Exportar para uso en otros módulos
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CloudManager;
-}
+// Exportar para uso en otros módulos (ES6)
+export { CloudManager };
