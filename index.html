@@ -550,7 +550,7 @@
     n.style.background = tipo === 'error' ? '#ff3366'
                        : tipo === 'info'  ? '#33ffcc'
                        : '#fff';
-    n.style.color = (tipo === 'error' || tipo === 'success') && tipo !== 'info' ? '#fff' : '#312E81';
+    n.style.color = (tipo === 'error' || tipo === 'success') && tipo !== 'info' ? '#E0E7FF' : '#312E81';
     n.classList.add('visible');
     clearTimeout(n._t);
     n._t = setTimeout(() => n.classList.remove('visible'), 3200);
