@@ -35,29 +35,54 @@
     }
 
     /* ══════════════════════════════════════
-       PANEL DE MÓDULOS
+       PANEL DE MÓDULOS — minimizable abajo
     ══════════════════════════════════════ */
     #panel-modulos {
       position: fixed;
-      top: 1rem;
-      right: 1rem;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 2000;
-      background: rgba(255,255,255,0.92);
-      border-radius: var(--radio);
-      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
-      padding: 0.9rem 1.1rem;
-      min-width: 190px;
-      backdrop-filter: blur(8px);
+      background: rgba(255,255,255,0.96);
+      border-radius: var(--radio) var(--radio) 0 0;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+      min-width: 220px;
+      max-width: 92vw;
+      backdrop-filter: blur(10px);
       border: 2px dashed var(--rosa);
+      border-bottom: none;
+      overflow: hidden;
     }
-    #panel-modulos h3 {
+    #panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.2rem;
+      cursor: pointer;
+      user-select: none;
       font-family: 'Bungee', cursive;
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       color: var(--oscuro);
-      opacity: 0.5;
-      margin-bottom: 0.7rem;
+    }
+    #panel-header:hover { background: rgba(255,51,102,0.06); }
+    #panel-chevron {
+      font-size: 0.7rem;
+      transition: transform 0.3s ease;
+      display: inline-block;
+    }
+    #panel-modulos.abierto #panel-chevron { transform: rotate(180deg); }
+    #panel-contenido {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      padding: 0 1.2rem;
+    }
+    #panel-modulos.abierto #panel-contenido {
+      max-height: 400px;
+      padding: 0.3rem 1.2rem 0.9rem;
     }
     .mod-fila {
       display: flex;
@@ -299,52 +324,66 @@
     }
 
     /* ══════════════════════════════════════
-       JUEGO DE NUBES
+       JUEGO DE NUBES — inline, bajo las nubes
     ══════════════════════════════════════ */
     #seccion-juego {
-      position: fixed;
-      bottom: 0; left: 0;
+      position: relative;
       width: 100%;
-      height: 28vh;
-      background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
-      z-index: 500;
-      overflow: hidden;
+      background: rgba(0,0,0,0.18);
       border-top: 2px dashed var(--menta);
+      border-bottom: 2px dashed var(--menta);
+      overflow: hidden;
+      height: 160px;
     }
-    #seccion-juego .juego-titulo {
-      position: absolute;
-      top: 8px; left: 16px;
-      color: white;
-      font-family: 'Caveat', cursive;
-      font-size: 1rem;
-      opacity: 0.8;
-      z-index: 5;
+    #juego-cabecera {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.35rem 1rem;
       pointer-events: none;
+      position: relative;
+      z-index: 5;
+    }
+    #juego-cabecera .juego-titulo {
+      font-family: 'Caveat', cursive;
+      font-size: 0.9rem;
+      color: white;
+      opacity: 0.85;
+    }
+    #juego-puntaje {
+      font-family: 'Righteous', cursive;
+      font-size: 1rem;
+      color: var(--sol);
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
     }
     .nube-juego {
       position: absolute;
-      width: 110px; height: 110px;
+      width: 60px; height: 60px;
       border-radius: 50%;
       cursor: pointer;
       opacity: 0;
       transform: scale(0);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+      touch-action: manipulation;
     }
-    .nube-juego.visible   { opacity: 1; transform: scale(1); }
+    .nube-juego.visible   { opacity: 1;  transform: scale(1); }
     .nube-juego.saliendo  { opacity: 0 !important; transform: scale(0) !important; }
-    .nube-juego-verde     { background: var(--menta); }
-    .nube-juego-blanca    { background: white; }
+    .nube-juego-reset {
+      background: radial-gradient(circle at 40% 35%, #fff 20%, #7ee8fa 60%, #33c6f5 100%);
+      border: 2px solid rgba(255,255,255,0.7);
+    }
 
     /* ══════════════════════════════════════
        ONEKO
     ══════════════════════════════════════ */
     #oneko {
-      width: 32px; height: 32px;
+      width: 35px; height: 35px;
       position: fixed;
       pointer-events: none;
       image-rendering: pixelated;
       background-image: url('https://adryd.com/static/neko/neko.gif');
+      background-size: 315px 35px;
       z-index: 9999;
     }
 
@@ -389,7 +428,7 @@
     ══════════════════════════════════════ */
     footer {
       text-align: center;
-      padding: 1.5rem 1rem 30vh;
+      padding: 1.5rem 1rem 5rem;
       font-family: 'Caveat', cursive;
       font-size: 0.85rem;
       color: rgba(255,255,255,0.7);
@@ -401,16 +440,25 @@
     ══════════════════════════════════════ */
     @media (max-width: 600px) {
       #panel-modulos { min-width: 160px; font-size: 0.8rem; }
-      .modulo-input  { max-width: 95%; }
+      .modulo-input  { max-width: 95%; transform: none !important; }
+      #contenedor-nubes { min-height: 320px; }
+      .nube { max-width: 82vw; font-size: 0.9rem; }
+      header h1 { font-size: 2rem; }
+      #seccion-juego { height: 140px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ─── PANEL DE MÓDULOS ─── -->
+  <!-- ─── PANEL DE MÓDULOS (minimizable) ─── -->
   <div id="panel-modulos">
-    <h3>Módulos ⚙️</h3>
-    <!-- generado por JS -->
+    <div id="panel-header">
+      <span>⚙️ Módulos</span>
+      <span id="panel-chevron">▲</span>
+    </div>
+    <div id="panel-contenido">
+      <!-- generado por JS -->
+    </div>
   </div>
 
   <!-- ─── ENCABEZADO ─── -->
@@ -446,7 +494,10 @@
 
   <!-- ─── JUEGO ─── -->
   <div id="seccion-juego">
-    <p class="juego-titulo">Relax: Explotá las nubes ☁️ · La verde reinicia</p>
+    <div id="juego-cabecera">
+      <span class="juego-titulo">Relax: explotá los círculos ☁️</span>
+      <span id="juego-puntaje">Puntos: <strong id="pts">0</strong></span>
+    </div>
   </div>
 
   <!-- ─── PIE ─── -->
@@ -455,7 +506,8 @@
     <a href="https://github.com/andesunlimited2020-ops/nubes-emocionales" target="_blank" rel="noopener">GitHub</a><br/>
     Mascota: <a href="https://github.com/adryd325/oneko.js" target="_blank" rel="noopener">oneko.js</a> (MIT) ·
     arte de <a href="https://twitter.com/_Anunnery" target="_blank" rel="noopener">@_Anunnery</a> ·
-    sprite de <a href="https://adryd.com" target="_blank" rel="noopener">adryd.com</a>
+    sprite de <a href="https://adryd.com" target="_blank" rel="noopener">adryd.com</a><br/>
+    Asistencia de código: <a href="https://claude.ai" target="_blank" rel="noopener">Claude (Anthropic)</a>
   </footer>
 
   <!-- ─── UI helpers ─── -->
@@ -712,20 +764,24 @@
 
 
     /* ────────────────────────────────────────────
-       MÓDULO: JUEGO DE NUBES
-       Nubes que se dividen al hacer clic.
-       La nube verde reinicia el juego.
-       Código adaptado del proyecto original.
+       MÓDULO: JUEGO DE CÍRCULOS
+       · Clic en círculo de color → suma 1 punto y genera 2 más
+       · Círculo celeste-blanco (aleatorio) → resetea puntaje a 0
+       · Diseño inline bajo las nubes, no intrusivo
     ──────────────────────────────────────────── */
     {
       nombre: 'juego',
-      etiqueta: '🎮 Juego de nubes',
+      etiqueta: '🎮 Juego de círculos',
       activo: true,
       _timer: null,
+      _puntos: 0,
+      _MAX: 12, // máximo de círculos simultáneos para no sobrecargar
 
       init() {
         const sec = document.getElementById('seccion-juego');
         sec.style.display = 'block';
+        this._puntos = 0;
+        this._actualizarPts();
         this._iniciar();
       },
 
@@ -737,70 +793,86 @@
         sec.querySelectorAll('.nube-juego').forEach(n => n.remove());
       },
 
+      _actualizarPts() {
+        const el = document.getElementById('pts');
+        if (el) el.textContent = this._puntos;
+      },
+
       _iniciar() {
         const sec = document.getElementById('seccion-juego');
         sec.querySelectorAll('.nube-juego').forEach(n => n.remove());
         clearTimeout(this._timer);
-        this._crearNube(false, true); // primera nube blanca
-        this._programarVerde();
+        this._crearCirculo(false); // primer círculo de color
+        this._programarReset();
       },
 
-      _crearNube(verde = false, blanca = false) {
-        const sec  = document.getElementById('seccion-juego');
+      _crearCirculo(esReset = false) {
+        const sec = document.getElementById('seccion-juego');
         if (!sec || sec.style.display === 'none') return;
-        const rect = sec.getBoundingClientRect();
 
-        const n   = document.createElement('div');
+        // Límite de círculos para no saturar pantalla pequeña
+        const existentes = sec.querySelectorAll('.nube-juego').length;
+        if (existentes >= this._MAX) return;
+
+        const rect = sec.getBoundingClientRect();
+        const tam  = 60;
+        const marT = 34; // bajo la cabecera
+
+        const n = document.createElement('div');
         n.className = 'nube-juego';
-        if (verde)  n.classList.add('nube-juego-verde');
-        else if (blanca) n.classList.add('nube-juego-blanca');
-        else {
-          const h = Math.floor(Math.random() * 360);
-          n.style.background = `hsl(${h},60%,85%)`;
+
+        if (esReset) {
+          n.classList.add('nube-juego-reset');
+        } else {
+          // Color aleatorio vivo, pero que NO sea celeste
+          const h = Math.floor(Math.random() * 300) + 10; // evita 180-210 (celeste)
+          const s = 55 + Math.floor(Math.random() * 30);
+          const l = 72 + Math.floor(Math.random() * 15);
+          n.style.background = `hsl(${h},${s}%,${l}%)`;
         }
 
-        const tam  = 110;
-        const marT = 40; // espacio bajo el título
-        n.style.top  = (Math.random() * (rect.height - tam - marT) + marT) + 'px';
-        n.style.left = (Math.random() * (rect.width  - tam))              + 'px';
+        const maxLeft = Math.max(rect.width - tam - 8, 10);
+        const maxTop  = Math.max(rect.height - tam - marT, 10);
+        n.style.left = (8 + Math.random() * maxLeft) + 'px';
+        n.style.top  = (marT + Math.random() * maxTop) + 'px';
 
         n.addEventListener('pointerdown', (e) => {
           e.stopPropagation();
           if (n.classList.contains('saliendo')) return;
-          if (verde) { this._reiniciar(); }
-          else       { this._dividir(n); }
+
+          if (esReset) {
+            this._puntos = 0;
+            this._actualizarPts();
+            notif('💧 ¡El círculo celeste reinició tu puntaje!', 'info');
+            this._quitar(n);
+          } else {
+            this._puntos++;
+            this._actualizarPts();
+            this._quitar(n);
+            // Genera 2 más solo si hay espacio
+            setTimeout(() => { this._crearCirculo(); }, 80);
+            setTimeout(() => { this._crearCirculo(); }, 160);
+          }
         });
 
         sec.appendChild(n);
-        // Forzar reflow para activar transición CSS
-        n.offsetHeight;
+        n.offsetHeight; // forzar reflow para activar transición
         n.classList.add('visible');
       },
 
-      _dividir(nube) {
-        nube.classList.add('saliendo');
-        nube.removeEventListener('pointerdown', () => {});
-        setTimeout(() => nube.remove(), 450);
-        this._crearNube();
-        this._crearNube();
+      _quitar(n) {
+        n.classList.add('saliendo');
+        setTimeout(() => n.remove(), 380);
       },
 
-      _reiniciar() {
-        const sec = document.getElementById('seccion-juego');
-        sec.querySelectorAll('.nube-juego').forEach(n => {
-          n.classList.add('saliendo');
-          setTimeout(() => n.remove(), 450);
-        });
-        clearTimeout(this._timer);
-        setTimeout(() => this._iniciar(), 500);
-      },
-
-      _programarVerde() {
-        const delay = 5000 + Math.random() * 10000;
+      _programarReset() {
+        // El círculo celeste aparece cada 8-18 segundos
+        const delay = 8000 + Math.random() * 10000;
         this._timer = setTimeout(() => {
-          if (document.getElementById('seccion-juego')?.style.display !== 'none') {
-            this._crearNube(true);
-            this._programarVerde();
+          const sec = document.getElementById('seccion-juego');
+          if (sec?.style.display !== 'none') {
+            this._crearCirculo(true);
+            this._programarReset();
           }
         }, delay);
       },
@@ -923,8 +995,8 @@
           el.style.top  = `${py - 16}px`;
         }
 
-        el.style.left = `${px}px`;
-        el.style.top  = `${py}px`;
+        el.style.left = `${px - 17}px`;
+        el.style.top  = `${py - 17}px`;
 
         document.onmousemove = e => { mx = e.clientX; my = e.clientY; };
         function toggleMouse(e) {
@@ -991,7 +1063,15 @@
   ══════════════════════════════ */
 
   function montarPanel() {
-    const panel = document.getElementById('panel-modulos');
+    const contenido = document.getElementById('panel-contenido');
+    const header    = document.getElementById('panel-header');
+    const panel     = document.getElementById('panel-modulos');
+
+    // Toggle abrir/cerrar
+    header.addEventListener('click', () => {
+      panel.classList.toggle('abierto');
+    });
+
     MODULOS.forEach(mod => {
       const label = document.createElement('label');
       label.className = 'mod-fila';
@@ -1022,7 +1102,7 @@
       label.appendChild(chk);
       label.appendChild(txt);
       label.appendChild(badge);
-      panel.appendChild(label);
+      contenido.appendChild(label);
     });
   }
 
